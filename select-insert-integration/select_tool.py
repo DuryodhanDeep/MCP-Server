@@ -2,6 +2,8 @@ import psycopg2
 from typing import Dict, List, Any, Optional, Tuple, Union
 import json
 from decimal import Decimal
+import re
+
 
 class DecimalEncoder(json.JSONEncoder):
     def default(self, obj):
@@ -58,7 +60,29 @@ def get_table_schema(conn, table_name: str) -> Dict[str, Dict[str, Any]]:
         raise Exception(f"Error getting table schema: {str(e)}")
 
 def validate_column_reference(col_ref: str, all_schemas: Dict[str, Dict]) -> bool:
-    """Validate a column reference"""
+    """Validate a column reference, including aggregate functions"""
+    
+    # Check for aggregate functions
+    aggregate_pattern = r'^(COUNT|SUM|AVG|MIN|MAX|STDDEV|VARIANCE)\s*\('
+    if re.match(aggregate_pattern, col_ref.upper().strip()):
+        # For aggregate functions, validate the column inside parentheses
+        # Extract content between parentheses
+        match = re.search(r'\((.*?)\)', col_ref)
+        if match:
+            inner_content = match.group(1).strip()
+            # Special case for COUNT(*)
+            if inner_content == '*':
+                return True
+            # Validate the column inside the aggregate function
+            return validate_column_reference(inner_content, all_schemas)
+        return True  # If we can't parse it, let the database handle it
+    
+    # Handle column aliases (e.g., "price AS total_price")
+    if ' AS ' in col_ref.upper():
+        actual_col = col_ref.split(' AS ')[0].strip()
+        return validate_column_reference(actual_col, all_schemas)
+    
+    # Original validation logic for regular columns
     if '.' in col_ref:
         table_part, col_part = col_ref.split('.', 1)
         if table_part in all_schemas:
