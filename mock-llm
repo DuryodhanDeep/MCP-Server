@@ -1,0 +1,540 @@
+# from flask import Flask, request, jsonify
+# import json
+# import time
+# import uuid
+
+# app = Flask(__name__)
+
+# @app.route('/v1/chat/completions', methods=['POST'])
+# def chat_completions():
+#     try:
+#         data = request.get_json()
+#         if not data:
+#             return jsonify({"error": "No JSON data provided"}), 400
+            
+#         messages = data.get('messages', [])
+#         model = data.get('model', 'gpt-3.5-turbo')
+#         tools = data.get('tools', [])
+        
+#         # Check if the last message is a tool response
+#         if messages and messages[-1].get('role') == 'tool':
+#             tool_response = messages[-1].get('content', '')
+#             tool_call_id = messages[-1].get('tool_call_id', '')
+            
+#             try:
+#                 # First try to parse as JSON
+#                 tool_data = json.loads(tool_response)
+                
+#                 if 'result' in tool_data and isinstance(tool_data['result'], dict):
+#                     result = tool_data['result']
+#                     if result.get('isError', False):
+#                         content = result.get('content', [])
+#                         if content and isinstance(content, list) and len(content) > 0:
+#                             error_text = content[0].get('text', 'Unknown error occurred')
+#                             final_content = f"I encountered an issue: {error_text}"
+#                         else:
+#                             final_content = "I encountered an error while processing your request."
+#                     else:
+#                         content = result.get('content', [])
+#                         if content and isinstance(content, list) and len(content) > 0:
+#                             result_text = content[0].get('text', '')
+#                             final_content = result_text
+#                         else:
+#                             final_content = "I received the information but couldn't format it properly."
+#                 elif tool_data.get('status') == 'success':
+#                     final_content = f"Based on the tool results: {tool_data.get('data', tool_data.get('report', ''))}"
+#                 else:
+#                     final_content = f"I encountered an issue with the tool: {tool_data.get('error_message', 'Unknown error')}"
+#             except (json.JSONDecodeError, AttributeError):
+#                 final_content = tool_response
+            
+#             return jsonify({
+#                 "id": f"chatcmpl-{uuid.uuid4().hex[:29]}",
+#                 "object": "chat.completion",
+#                 "created": int(time.time()),
+#                 "model": model,
+#                 "choices": [{
+#                     "index": 0,
+#                     "message": {
+#                         "role": "assistant",
+#                         "content": final_content
+#                     },
+#                     "finish_reason": "stop"
+#                 }],
+#                 "usage": {
+#                     "prompt_tokens": sum(len(msg.get('content', '').split()) for msg in messages),
+#                     "completion_tokens": len(final_content.split()),
+#                     "total_tokens": sum(len(msg.get('content', '').split()) for msg in messages) + len(final_content.split())
+#                 }
+#             })
+        
+#         # Get the latest user message
+#         user_messages = [msg for msg in messages if msg.get('role') == 'user']
+#         if not user_messages:
+#             return jsonify({
+#                 "id": f"chatcmpl-{uuid.uuid4().hex[:29]}",
+#                 "object": "chat.completion",
+#                 "created": int(time.time()),
+#                 "model": model,
+#                 "choices": [{
+#                     "index": 0,
+#                     "message": {
+#                         "role": "assistant",
+#                         "content": "Hello! How can I help you today?"
+#                     },
+#                     "finish_reason": "stop"
+#                 }],
+#                 "usage": {
+#                     "prompt_tokens": 5,
+#                     "completion_tokens": 8,
+#                     "total_tokens": 13
+#                 }
+#             })
+        
+#         latest_user_message = user_messages[-1]['content'].lower()
+        
+#         # Check if current user request needs a tool call
+#         if tools:
+            
+#             # Determine which tool to call based on the LATEST user message
+#             if any(keyword in latest_user_message for keyword in ['weather', 'temperature', 'forecast', 'rain', 'sunny']):
+#                 return jsonify({
+#                     "id": f"chatcmpl-{uuid.uuid4().hex[:29]}",
+#                     "object": "chat.completion",
+#                     "created": int(time.time()),
+#                     "model": model,
+#                     "choices": [{
+#                         "index": 0,
+#                         "message": {
+#                             "role": "assistant",
+#                             "content": None,
+#                             "tool_calls": [{
+#                                 "id": f"call_{uuid.uuid4().hex[:24]}",
+#                                 "type": "function",
+#                                 "function": {
+#                                     "name": "get_weather",
+#                                     "arguments": json.dumps({"city": "New York"})  
+#                                 }
+#                             }]
+#                         },
+#                         "finish_reason": "tool_calls"
+#                     }],
+#                     "usage": {
+#                         "prompt_tokens": sum(len(msg.get('content', '').split()) for msg in messages),
+#                         "completion_tokens": 0,  
+#                         "total_tokens": sum(len(msg.get('content', '').split()) for msg in messages)
+#                     }
+#                 })
+#             elif any(keyword in latest_user_message for keyword in ['time', 'clock', 'hour', 'minute']):
+#                 return jsonify({
+#                     "id": f"chatcmpl-{uuid.uuid4().hex[:29]}",
+#                     "object": "chat.completion",
+#                     "created": int(time.time()),
+#                     "model": model,
+#                     "choices": [{
+#                         "index": 0,
+#                         "message": {
+#                             "role": "assistant",
+#                             "content": None,
+#                             "tool_calls": [{
+#                                 "id": f"call_{uuid.uuid4().hex[:24]}",
+#                                 "type": "function",
+#                                 "function": {
+#                                     "name": "get_current_time",
+#                                     "arguments": json.dumps({"city": "New York"})  
+#                                 }
+#                             }]
+#                         },
+#                         "finish_reason": "tool_calls"
+#                     }],
+#                     "usage": {
+#                         "prompt_tokens": sum(len(msg.get('content', '').split()) for msg in messages),
+#                         "completion_tokens": 0,
+#                         "total_tokens": sum(len(msg.get('content', '').split()) for msg in messages)
+#                     }
+#                 })
+        
+#         response_content = "Hello there! How can I help you with today?"
+        
+#         return jsonify({
+#             "id": f"chatcmpl-{uuid.uuid4().hex[:29]}",
+#             "object": "chat.completion",
+#             "created": int(time.time()),
+#             "model": model,
+#             "choices": [{
+#                 "index": 0,
+#                 "message": {
+#                     "role": "assistant",
+#                     "content": response_content
+#                 },
+#                 "finish_reason": "stop"
+#             }],
+#             "usage": {
+#                 "prompt_tokens": sum(len(msg.get('content', '').split()) for msg in messages),
+#                 "completion_tokens": len(response_content.split()),
+#                 "total_tokens": sum(len(msg.get('content', '').split()) for msg in messages) + len(response_content.split())
+#             }
+#         })
+        
+#     except Exception as e:
+#         return jsonify({
+#             "error": {
+#                 "message": f"Internal server error: {str(e)}",
+#                 "type": "internal_server_error",
+#                 "param": None,
+#                 "code": None
+#             }
+#         }), 500
+# if __name__ == '__main__':
+#     print("Starting Mock OpenAI API Server on http://localhost:8001")
+#     app.run(host='0.0.0.0', port=8001, debug=True)
+
+
+
+
+
+
+
+from flask import Flask, request, jsonify
+import json
+import time
+import uuid
+import random
+
+app = Flask(__name__)
+
+# Simulate available Ollama models that support tool calling
+OLLAMA_MODELS = [
+    "llama3.1:latest",
+    "llama3.1:8b", 
+    "llama3.1:70b",
+    "llama3.2:latest",
+    "llama3.2:1b",
+    "llama3.2:3b",
+    "mistral:latest",
+    "mistral:7b",
+    "qwen2.5:latest",
+    "qwen2.5:7b",
+    "qwen2.5:14b",
+    "qwen2.5:32b",
+    "codellama:latest",
+    "codellama:7b"
+]
+
+@app.route('/api/chat', methods=['POST'])
+def chat():
+    """Ollama chat endpoint"""
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({"error": "No JSON data provided"}), 400
+            
+        model = data.get('model', 'llama3.1:latest')
+        messages = data.get('messages', [])
+        tools = data.get('tools', [])
+        stream = data.get('stream', False)
+        
+        # Validate model
+        if model not in OLLAMA_MODELS:
+            return jsonify({
+                "error": f"model '{model}' not found, try pulling it first"
+            }), 404
+        
+        # Check if the last message is a tool response
+        if messages and messages[-1].get('role') == 'tool':
+            # Tool has been executed, provide final answer based on tool result
+            tool_response = messages[-1].get('content', '')
+            
+            # Handle LiteLLM wrapper tool responses
+            try:
+                tool_data = json.loads(tool_response)
+                
+                # Handle LiteLLM CallToolResult structure
+                if 'result' in tool_data and isinstance(tool_data['result'], dict):
+                    result = tool_data['result']
+                    if result.get('isError', False):
+                        content = result.get('content', [])
+                        if content and isinstance(content, list) and len(content) > 0:
+                            error_text = content[0].get('text', 'Unknown error occurred')
+                            final_content = f"I encountered an issue: {error_text}"
+                        else:
+                            final_content = "I encountered an error while processing your request."
+                    else:
+                        content = result.get('content', [])
+                        if content and isinstance(content, list) and len(content) > 0:
+                            result_text = content[0].get('text', '')
+                            final_content = result_text
+                        else:
+                            final_content = "I received the information but couldn't format it properly."
+                elif tool_data.get('status') == 'success':
+                    final_content = f"Based on the tool results: {tool_data.get('data', tool_data.get('report', ''))}"
+                else:
+                    final_content = f"I encountered an issue: {tool_data.get('error_message', 'Unknown error')}"
+            except (json.JSONDecodeError, AttributeError):
+                final_content = tool_response
+            
+            # Ollama response format
+            response = {
+                "model": model,
+                "created_at": f"{time.time():.0f}",
+                "message": {
+                    "role": "assistant",
+                    "content": final_content
+                },
+                "done": True,
+                "total_duration": random.randint(1000000000, 5000000000),  # nanoseconds
+                "load_duration": random.randint(100000000, 500000000),
+                "prompt_eval_count": sum(len(msg.get('content', '').split()) for msg in messages),
+                "prompt_eval_duration": random.randint(500000000, 2000000000),
+                "eval_count": len(final_content.split()),
+                "eval_duration": random.randint(1000000000, 3000000000)
+            }
+            
+            if stream:
+                return jsonify(response)
+            else:
+                return jsonify(response)
+        
+        # Get the latest user message
+        user_messages = [msg for msg in messages if msg.get('role') == 'user']
+        if not user_messages:
+            response_content = "Hello! How can I help you today?"
+            
+            return jsonify({
+                "model": model,
+                "created_at": f"{time.time():.0f}",
+                "message": {
+                    "role": "assistant",
+                    "content": response_content
+                },
+                "done": True,
+                "total_duration": random.randint(1000000000, 3000000000),
+                "load_duration": random.randint(100000000, 300000000),
+                "prompt_eval_count": 5,
+                "prompt_eval_duration": random.randint(200000000, 800000000),
+                "eval_count": len(response_content.split()),
+                "eval_duration": random.randint(500000000, 1500000000)
+            })
+        
+        latest_user_message = user_messages[-1]['content'].lower()
+        
+        # Extract location from user message
+        location = extract_location(latest_user_message)
+        
+        # Check if current user request needs a tool call
+        if tools:
+            # Determine which tool to call based on the LATEST user message
+            if any(keyword in latest_user_message for keyword in ['weather', 'temperature', 'forecast', 'rain', 'sunny', 'climate']):
+                tool_call_id = f"call_{uuid.uuid4().hex[:24]}"
+                
+                return jsonify({
+                    "model": model,
+                    "created_at": f"{time.time():.0f}",
+                    "message": {
+                        "role": "assistant",
+                        "content": "",
+                        "tool_calls": [{
+                            "id": tool_call_id,
+                            "type": "function",
+                            "function": {
+                                "name": "get_weather",
+                                "arguments": json.dumps({"city": location})
+                            }
+                        }]
+                    },
+                    "done": True,
+                    "total_duration": random.randint(1000000000, 4000000000),
+                    "load_duration": random.randint(100000000, 400000000),
+                    "prompt_eval_count": sum(len(msg.get('content', '').split()) for msg in messages),
+                    "prompt_eval_duration": random.randint(500000000, 2000000000),
+                    "eval_count": 0,  # No content generated for tool calls
+                    "eval_duration": random.randint(800000000, 2500000000)
+                })
+            
+            elif any(keyword in latest_user_message for keyword in ['time', 'clock', 'hour', 'minute', 'current time']):
+                tool_call_id = f"call_{uuid.uuid4().hex[:24]}"
+                
+                return jsonify({
+                    "model": model,
+                    "created_at": f"{time.time():.0f}",
+                    "message": {
+                        "role": "assistant",
+                        "content": "",
+                        "tool_calls": [{
+                            "id": tool_call_id,
+                            "type": "function",
+                            "function": {
+                                "name": "get_current_time",
+                                "arguments": json.dumps({"city": location})
+                            }
+                        }]
+                    },
+                    "done": True,
+                    "total_duration": random.randint(1000000000, 4000000000),
+                    "load_duration": random.randint(100000000, 400000000),
+                    "prompt_eval_count": sum(len(msg.get('content', '').split()) for msg in messages),
+                    "prompt_eval_duration": random.randint(500000000, 2000000000),
+                    "eval_count": 0,
+                    "eval_duration": random.randint(800000000, 2500000000)
+                })
+        
+        # Generate a contextual response
+        response_content = generate_contextual_response(latest_user_message, tools, model)
+        
+        return jsonify({
+            "model": model,
+            "created_at": f"{time.time():.0f}",
+            "message": {
+                "role": "assistant",
+                "content": response_content
+            },
+            "done": True,
+            "total_duration": random.randint(1000000000, 5000000000),
+            "load_duration": random.randint(100000000, 500000000),
+            "prompt_eval_count": sum(len(msg.get('content', '').split()) for msg in messages),
+            "prompt_eval_duration": random.randint(500000000, 2000000000),
+            "eval_count": len(response_content.split()),
+            "eval_duration": random.randint(1000000000, 3000000000)
+        })
+        
+    except Exception as e:
+        return jsonify({
+            "error": f"Internal server error: {str(e)}"
+        }), 500
+
+@app.route('/api/tags', methods=['GET'])
+def list_models():
+    """List available Ollama models"""
+    models = []
+    for model_name in OLLAMA_MODELS:
+        models.append({
+            "name": model_name,
+            "model": model_name,
+            "modified_at": f"{time.time():.0f}",
+            "size": random.randint(1000000000, 10000000000),  # Random size in bytes
+            "digest": f"sha256:{uuid.uuid4().hex}",
+            "details": {
+                "parent_model": "",
+                "format": "gguf",
+                "family": model_name.split(':')[0],
+                "families": [model_name.split(':')[0]],
+                "parameter_size": f"{random.choice(['1B', '3B', '7B', '8B', '14B', '32B', '70B'])}",
+                "quantization_level": "Q4_0"
+            }
+        })
+    
+    return jsonify({"models": models})
+
+@app.route('/api/show', methods=['POST'])
+def show_model():
+    """Show model information"""
+    data = request.get_json()
+    model = data.get('name', 'llama3.1:latest')
+    
+    if model not in OLLAMA_MODELS:
+        return jsonify({"error": f"model '{model}' not found"}), 404
+    
+    return jsonify({
+        "modelfile": f"# Modelfile for {model}",
+        "parameters": {
+            "num_ctx": 4096,
+            "num_predict": -1,
+        },
+        "template": "{{ if .System }}{{ .System }}{{ end }}{{ if .Prompt }}{{ .Prompt }}{{ end }}",
+        "details": {
+            "parent_model": "",
+            "format": "gguf",
+            "family": model.split(':')[0],
+            "families": [model.split(':')[0]],
+            "parameter_size": f"{random.choice(['1B', '3B', '7B', '8B', '14B', '32B', '70B'])}",
+            "quantization_level": "Q4_0"
+        }
+    })
+
+def extract_location(user_message):
+    """Extract location from user message"""
+    # Simple location extraction logic
+    if "in " in user_message:
+        try:
+            parts = user_message.split("in ")
+            if len(parts) > 1:
+                location_part = parts[-1].strip()
+                # Take the first word/phrase as location
+                location = location_part.split()[0].title()
+                # Handle common multi-word cities
+                if location.lower() == "new" and "york" in location_part.lower():
+                    return "New York"
+                elif location.lower() == "los" and "angeles" in location_part.lower():
+                    return "Los Angeles"
+                elif location.lower() == "san" and "francisco" in location_part.lower():
+                    return "San Francisco"
+                return location
+        except:
+            pass
+    return "New York"  # Default location
+
+def generate_contextual_response(user_message, tools, model):
+    """Generate a contextual response based on user input and model"""
+    user_message = user_message.lower()
+    
+    # Model-specific response variations
+    if "llama" in model:
+        assistant_personality = "I'm Llama, an AI assistant created by Meta."
+    elif "mistral" in model:
+        assistant_personality = "I'm Mistral, an AI assistant developed by Mistral AI."
+    elif "qwen" in model:
+        assistant_personality = "I'm Qwen, an AI assistant developed by Alibaba Cloud."
+    elif "codellama" in model:
+        assistant_personality = "I'm CodeLlama, specialized in helping with code and programming tasks."
+    else:
+        assistant_personality = "I'm an AI assistant running on Ollama."
+    
+    # Greeting responses
+    if any(greeting in user_message for greeting in ['hello', 'hi', 'hey', 'greetings']):
+        return f"Hello! {assistant_personality} How can I help you today?"
+    
+    # If tools are available, mention capabilities
+    if tools:
+        tool_names = [tool.get('function', {}).get('name', '') for tool in tools]
+        capabilities = []
+        if 'get_weather' in tool_names:
+            capabilities.append('weather information')
+        if 'get_current_time' in tool_names:
+            capabilities.append('current time')
+        
+        if capabilities:
+            return f"I can help you with {' and '.join(capabilities)}. What would you like to know?"
+    
+    # Default responses for common queries
+    if 'help' in user_message:
+        return f"{assistant_personality} I'm here to help! You can ask me questions, and I'll do my best to provide useful information and assistance."
+    
+    if any(word in user_message for word in ['thanks', 'thank you']):
+        return "You're welcome! Is there anything else I can help you with?"
+    
+    if 'what' in user_message and 'model' in user_message:
+        return f"I'm running on the {model} model via Ollama. How can I assist you?"
+    
+    # Generic response
+    return "I understand you're asking about something. Could you please provide more details so I can give you the most helpful response?"
+
+@app.errorhandler(404)
+def not_found(error):
+    return jsonify({"error": "Not found"}), 404
+
+@app.errorhandler(405)
+def method_not_allowed(error):
+    return jsonify({"error": "Method not allowed"}), 405
+
+if __name__ == '__main__':
+    print("Starting Mock Ollama API Server on http://localhost:11434")
+    print("Available endpoints:")
+    print("  POST /api/chat         - Chat completions with tool calling")
+    print("  GET  /api/tags         - List available models")
+    print("  POST /api/show         - Show model information")
+    print()
+    print("Available models with tool calling support:")
+    for model in OLLAMA_MODELS:
+        print(f"  - {model}")
+    
+    app.run(host='0.0.0.0', port=11434, debug=True)
