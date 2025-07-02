@@ -1,0 +1,6 @@
+google-adk
+python-dotenv
+asyncio
+google-adk
+FastMCP
+litellm

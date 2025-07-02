@@ -1,0 +1,673 @@
+{
+  "id": "14829ec7-a6df-4919-a455-b6997e323088",
+  "appName": "database-agent",
+  "userId": "user",
+  "state": {},
+  "events": [
+    {
+      "content": {
+        "parts": [
+          {
+            "text": "hi"
+          }
+        ],
+        "role": "user"
+      },
+      "invocationId": "e-ae843654-53e3-4f1c-a81c-b1a1073436ef",
+      "author": "user",
+      "actions": {
+        "stateDelta": {},
+        "artifactDelta": {},
+        "requestedAuthConfigs": {}
+      },
+      "id": "bmvl9QwM",
+      "timestamp": 1751390497.366983
+    },
+    {
+      "content": {
+        "parts": [
+          {
+            "text": "Hi there! How can I help you with the movie database today?\n"
+          }
+        ],
+        "role": "model"
+      },
+      "partial": false,
+      "usageMetadata": {
+        "candidatesTokenCount": 15,
+        "promptTokenCount": 1087,
+        "totalTokenCount": 1102
+      },
+      "invocationId": "e-ae843654-53e3-4f1c-a81c-b1a1073436ef",
+      "author": "movie_database_agent",
+      "actions": {
+        "stateDelta": {},
+        "artifactDelta": {},
+        "requestedAuthConfigs": {}
+      },
+      "id": "EKfl5Siz",
+      "timestamp": 1751390498.52673
+    },
+    {
+      "content": {
+        "parts": [
+          {
+            "text": "Can you list all the table names?"
+          }
+        ],
+        "role": "user"
+      },
+      "invocationId": "e-8f30ca01-0f25-4e8e-bbab-ce893a412e7f",
+      "author": "user",
+      "actions": {
+        "stateDelta": {},
+        "artifactDelta": {},
+        "requestedAuthConfigs": {}
+      },
+      "id": "zY92rl32",
+      "timestamp": 1751390520.285624
+    },
+    {
+      "content": {
+        "parts": [
+          {
+            "functionCall": {
+              "id": "call_29245917-e836-4fc8-ba6f-7d74ba0f8300",
+              "args": {
+                "object_type": "tables"
+              },
+              "name": "list_objects"
+            }
+          }
+        ],
+        "role": "model"
+      },
+      "partial": false,
+      "usageMetadata": {
+        "candidatesTokenCount": 7,
+        "promptTokenCount": 1110,
+        "totalTokenCount": 1117
+      },
+      "invocationId": "e-8f30ca01-0f25-4e8e-bbab-ce893a412e7f",
+      "author": "movie_database_agent",
+      "actions": {
+        "stateDelta": {},
+        "artifactDelta": {},
+        "requestedAuthConfigs": {}
+      },
+      "longRunningToolIds": [],
+      "id": "C11zfDMa",
+      "timestamp": 1751390521.200937
+    },
+    {
+      "content": {
+        "parts": [
+          {
+            "functionResponse": {
+              "id": "call_29245917-e836-4fc8-ba6f-7d74ba0f8300",
+              "name": "list_objects",
+              "response": {
+                "result": {
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "{\n  \"success\": true,\n  \"objects\": [\n    {\n      \"name\": \"actors\",\n      \"type\": \"BASE TABLE\"\n    },\n    {\n      \"name\": \"movie_actors\",\n      \"type\": \"BASE TABLE\"\n    },\n    {\n      \"name\": \"movies\",\n      \"type\": \"BASE TABLE\"\n    }\n  ],\n  \"count\": 3,\n  \"object_type\": \"tables\",\n  \"schema\": \"public\"\n}"
+                    }
+                  ],
+                  "isError": false
+                }
+              }
+            }
+          }
+        ],
+        "role": "user"
+      },
+      "invocationId": "e-8f30ca01-0f25-4e8e-bbab-ce893a412e7f",
+      "author": "movie_database_agent",
+      "actions": {
+        "stateDelta": {},
+        "artifactDelta": {},
+        "requestedAuthConfigs": {}
+      },
+      "id": "rwWPYoqR",
+      "timestamp": 1751390524.641274
+    },
+    {
+      "content": {
+        "parts": [
+          {
+            "text": "Okay, the tables in the database are:\n\n*   actors\n*   movie\\_actors\n*   movies\n"
+          }
+        ],
+        "role": "model"
+      },
+      "partial": false,
+      "usageMetadata": {
+        "candidatesTokenCount": 24,
+        "promptTokenCount": 1272,
+        "totalTokenCount": 1296
+      },
+      "invocationId": "e-8f30ca01-0f25-4e8e-bbab-ce893a412e7f",
+      "author": "movie_database_agent",
+      "actions": {
+        "stateDelta": {},
+        "artifactDelta": {},
+        "requestedAuthConfigs": {}
+      },
+      "id": "QskmohIt",
+      "timestamp": 1751390524.683932
+    },
+    {
+      "content": {
+        "parts": [
+          {
+            "text": "Give me all the movie ids which are released before 2000"
+          }
+        ],
+        "role": "user"
+      },
+      "invocationId": "e-6672af5a-8b68-46be-9e9a-efc36508c8d3",
+      "author": "user",
+      "actions": {
+        "stateDelta": {},
+        "artifactDelta": {},
+        "requestedAuthConfigs": {}
+      },
+      "id": "cgs6RF2c",
+      "timestamp": 1751390597.303498
+    },
+    {
+      "content": {
+        "parts": [
+          {
+            "functionCall": {
+              "id": "call_d9415550-9742-4e00-81a1-1a43c1418adb",
+              "args": {
+                "table": "movies",
+                "where_conditions": [
+                  {
+                    "value": 2000,
+                    "operator": "<",
+                    "column": "release_year"
+                  }
+                ],
+                "columns": [
+                  "id"
+                ]
+              },
+              "name": "structured_select"
+            }
+          }
+        ],
+        "role": "model"
+      },
+      "partial": false,
+      "usageMetadata": {
+        "candidatesTokenCount": 18,
+        "promptTokenCount": 1311,
+        "totalTokenCount": 1329
+      },
+      "invocationId": "e-6672af5a-8b68-46be-9e9a-efc36508c8d3",
+      "author": "movie_database_agent",
+      "actions": {
+        "stateDelta": {},
+        "artifactDelta": {},
+        "requestedAuthConfigs": {}
+      },
+      "longRunningToolIds": [],
+      "id": "ZgGG8eUA",
+      "timestamp": 1751390597.374348
+    },
+    {
+      "content": {
+        "parts": [
+          {
+            "functionResponse": {
+              "id": "call_d9415550-9742-4e00-81a1-1a43c1418adb",
+              "name": "structured_select",
+              "response": {
+                "result": {
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "{\"success\": true, \"message\": \"Successfully retrieved 8 rows\", \"data\": [{\"id\": 19}, {\"id\": 21}, {\"id\": 22}, {\"id\": 23}, {\"id\": 25}, {\"id\": 26}, {\"id\": 36}, {\"id\": 40}], \"row_count\": 8, \"query_executed\": \"SELECT id FROM movies WHERE release_year < %s\", \"columns\": [\"id\"]}"
+                    }
+                  ],
+                  "isError": false
+                }
+              }
+            }
+          }
+        ],
+        "role": "user"
+      },
+      "invocationId": "e-6672af5a-8b68-46be-9e9a-efc36508c8d3",
+      "author": "movie_database_agent",
+      "actions": {
+        "stateDelta": {},
+        "artifactDelta": {},
+        "requestedAuthConfigs": {}
+      },
+      "id": "rUPM7UAW",
+      "timestamp": 1751390600.225148
+    },
+    {
+      "content": {
+        "parts": [
+          {
+            "text": "The movie IDs released before 2000 are: 19, 21, 22, 23, 25, 26, 36, and 40.\n"
+          }
+        ],
+        "role": "model"
+      },
+      "partial": false,
+      "usageMetadata": {
+        "candidatesTokenCount": 46,
+        "promptTokenCount": 1472,
+        "totalTokenCount": 1518
+      },
+      "invocationId": "e-6672af5a-8b68-46be-9e9a-efc36508c8d3",
+      "author": "movie_database_agent",
+      "actions": {
+        "stateDelta": {},
+        "artifactDelta": {},
+        "requestedAuthConfigs": {}
+      },
+      "id": "Rk7qfFE3",
+      "timestamp": 1751390600.267087
+    },
+    {
+      "content": {
+        "parts": [
+          {
+            "text": "Who is the director of movie with id 19"
+          }
+        ],
+        "role": "user"
+      },
+      "invocationId": "e-d236c59a-9254-4f0e-93bd-1e70de717997",
+      "author": "user",
+      "actions": {
+        "stateDelta": {},
+        "artifactDelta": {},
+        "requestedAuthConfigs": {}
+      },
+      "id": "ArgRXoGd",
+      "timestamp": 1751390657.949328
+    },
+    {
+      "content": {
+        "parts": [
+          {
+            "text": "I do not have the director information in the table. However, I can show you the schema of the movies table. Would you like that?\n"
+          }
+        ],
+        "role": "model"
+      },
+      "partial": false,
+      "usageMetadata": {
+        "candidatesTokenCount": 30,
+        "promptTokenCount": 1529,
+        "totalTokenCount": 1559
+      },
+      "invocationId": "e-d236c59a-9254-4f0e-93bd-1e70de717997",
+      "author": "movie_database_agent",
+      "actions": {
+        "stateDelta": {},
+        "artifactDelta": {},
+        "requestedAuthConfigs": {}
+      },
+      "id": "ujhaF5Vn",
+      "timestamp": 1751390658.012512
+    },
+    {
+      "content": {
+        "parts": [
+          {
+            "text": "sure"
+          }
+        ],
+        "role": "user"
+      },
+      "invocationId": "e-638819a7-1aa1-470e-8178-7c3b028fa8e5",
+      "author": "user",
+      "actions": {
+        "stateDelta": {},
+        "artifactDelta": {},
+        "requestedAuthConfigs": {}
+      },
+      "id": "Jl1OM9CI",
+      "timestamp": 1751390668.683711
+    },
+    {
+      "content": {
+        "parts": [
+          {
+            "functionCall": {
+              "id": "call_a0710e73-3911-4b79-9c6f-56dd68c1614c",
+              "args": {
+                "object_name": "movies",
+                "object_type": "table"
+              },
+              "name": "get_object_details"
+            }
+          }
+        ],
+        "role": "model"
+      },
+      "partial": false,
+      "usageMetadata": {
+        "candidatesTokenCount": 13,
+        "promptTokenCount": 1560,
+        "totalTokenCount": 1573
+      },
+      "invocationId": "e-638819a7-1aa1-470e-8178-7c3b028fa8e5",
+      "author": "movie_database_agent",
+      "actions": {
+        "stateDelta": {},
+        "artifactDelta": {},
+        "requestedAuthConfigs": {}
+      },
+      "longRunningToolIds": [],
+      "id": "ERUvHL7G",
+      "timestamp": 1751390668.741929
+    },
+    {
+      "content": {
+        "parts": [
+          {
+            "functionResponse": {
+              "id": "call_a0710e73-3911-4b79-9c6f-56dd68c1614c",
+              "name": "get_object_details",
+              "response": {
+                "result": {
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "{\n  \"success\": true,\n  \"object_name\": \"movies\",\n  \"object_type\": \"table\",\n  \"schema\": \"public\",\n  \"columns\": [\n    {\n      \"name\": \"id\",\n      \"type\": \"integer\",\n      \"nullable\": false,\n      \"default\": \"nextval('movies_id_seq'::regclass)\",\n      \"max_length\": null\n    },\n    {\n      \"name\": \"title\",\n      \"type\": \"character varying\",\n      \"nullable\": false,\n      \"default\": null,\n      \"max_length\": 255\n    },\n    {\n      \"name\": \"release_year\",\n      \"type\": \"integer\",\n      \"nullable\": true,\n      \"default\": null,\n      \"max_length\": null\n    },\n    {\n      \"name\": \"genre\",\n      \"type\": \"character varying\",\n      \"nullable\": true,\n      \"default\": null,\n      \"max_length\": 100\n    },\n    {\n      \"name\": \"director\",\n      \"type\": \"character varying\",\n      \"nullable\": true,\n      \"default\": null,\n      \"max_length\": 255\n    },\n    {\n      \"name\": \"rating\",\n      \"type\": \"numeric\",\n      \"nullable\": true,\n      \"default\": null,\n      \"max_length\": null\n    },\n    {\n      \"name\": \"duration_minutes\",\n      \"type\": \"integer\",\n      \"nullable\": true,\n      \"default\": null,\n      \"max_length\": null\n    },\n    {\n      \"name\": \"budget\",\n      \"type\": \"bigint\",\n      \"nullable\": true,\n      \"default\": null,\n      \"max_length\": null\n    },\n    {\n      \"name\": \"revenue\",\n      \"type\": \"bigint\",\n      \"nullable\": true,\n      \"default\": null,\n      \"max_length\": null\n    },\n    {\n      \"name\": \"description\",\n      \"type\": \"text\",\n      \"nullable\": true,\n      \"default\": null,\n      \"max_length\": null\n    }\n  ],\n  \"constraints\": [\n    {\n      \"name\": \"movies_pkey\",\n      \"type\": \"PRIMARY KEY\"\n    },\n    {\n      \"name\": \"2200_16390_1_not_null\",\n      \"type\": \"CHECK\"\n    },\n    {\n      \"name\": \"2200_16390_2_not_null\",\n      \"type\": \"CHECK\"\n    }\n  ]\n}"
+                    }
+                  ],
+                  "isError": false
+                }
+              }
+            }
+          }
+        ],
+        "role": "user"
+      },
+      "invocationId": "e-638819a7-1aa1-470e-8178-7c3b028fa8e5",
+      "author": "movie_database_agent",
+      "actions": {
+        "stateDelta": {},
+        "artifactDelta": {},
+        "requestedAuthConfigs": {}
+      },
+      "id": "76jTI86M",
+      "timestamp": 1751390669.833918
+    },
+    {
+      "content": {
+        "parts": [
+          {
+            "text": "Okay, the `movies` table has a `director` column. Now I can retrieve the director of the movie with ID 19.\n"
+          },
+          {
+            "functionCall": {
+              "id": "call_7b415e34-1d46-47dd-90ec-a5f8cbaf43eb",
+              "args": {
+                "columns": [
+                  "director"
+                ],
+                "where_conditions": [
+                  {
+                    "column": "id",
+                    "operator": "=",
+                    "value": 19
+                  }
+                ],
+                "table": "movies"
+              },
+              "name": "structured_select"
+            }
+          }
+        ],
+        "role": "model"
+      },
+      "partial": false,
+      "usageMetadata": {
+        "candidatesTokenCount": 46,
+        "promptTokenCount": 2271,
+        "totalTokenCount": 2317
+      },
+      "invocationId": "e-638819a7-1aa1-470e-8178-7c3b028fa8e5",
+      "author": "movie_database_agent",
+      "actions": {
+        "stateDelta": {},
+        "artifactDelta": {},
+        "requestedAuthConfigs": {}
+      },
+      "longRunningToolIds": [],
+      "id": "DhZEGlIH",
+      "timestamp": 1751390669.869028
+    },
+    {
+      "content": {
+        "parts": [
+          {
+            "functionResponse": {
+              "id": "call_7b415e34-1d46-47dd-90ec-a5f8cbaf43eb",
+              "name": "structured_select",
+              "response": {
+                "result": {
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "{\"success\": true, \"message\": \"Successfully retrieved 1 rows\", \"data\": [{\"director\": \"Martin Scorsese\"}], \"row_count\": 1, \"query_executed\": \"SELECT director FROM movies WHERE id = %s\", \"columns\": [\"director\"]}"
+                    }
+                  ],
+                  "isError": false
+                }
+              }
+            }
+          }
+        ],
+        "role": "user"
+      },
+      "invocationId": "e-638819a7-1aa1-470e-8178-7c3b028fa8e5",
+      "author": "movie_database_agent",
+      "actions": {
+        "stateDelta": {},
+        "artifactDelta": {},
+        "requestedAuthConfigs": {}
+      },
+      "id": "A8zkW8O5",
+      "timestamp": 1751390671.567888
+    },
+    {
+      "content": {
+        "parts": [
+          {
+            "text": "The director of the movie with ID 19 is Martin Scorsese.\n"
+          }
+        ],
+        "role": "model"
+      },
+      "partial": false,
+      "usageMetadata": {
+        "candidatesTokenCount": 15,
+        "promptTokenCount": 2410,
+        "totalTokenCount": 2425
+      },
+      "invocationId": "e-638819a7-1aa1-470e-8178-7c3b028fa8e5",
+      "author": "movie_database_agent",
+      "actions": {
+        "stateDelta": {},
+        "artifactDelta": {},
+        "requestedAuthConfigs": {}
+      },
+      "id": "DoNfsbh5",
+      "timestamp": 1751390671.608807
+    },
+    {
+      "content": {
+        "parts": [
+          {
+            "text": "ok, Can you describe this movie a bit more"
+          }
+        ],
+        "role": "user"
+      },
+      "invocationId": "e-f5dc728a-0f86-4820-a955-4b05ad671aae",
+      "author": "user",
+      "actions": {
+        "stateDelta": {},
+        "artifactDelta": {},
+        "requestedAuthConfigs": {}
+      },
+      "id": "Z9hsKPRZ",
+      "timestamp": 1751390693.708603
+    },
+    {
+      "content": {
+        "parts": [
+          {
+            "text": "Could you please specify what information about the movie you'd like to know? For example, I could retrieve the title, release year, genre, rating, duration, budget, revenue, or description.\n"
+          }
+        ],
+        "role": "model"
+      },
+      "partial": false,
+      "usageMetadata": {
+        "candidatesTokenCount": 42,
+        "promptTokenCount": 2435,
+        "totalTokenCount": 2477
+      },
+      "invocationId": "e-f5dc728a-0f86-4820-a955-4b05ad671aae",
+      "author": "movie_database_agent",
+      "actions": {
+        "stateDelta": {},
+        "artifactDelta": {},
+        "requestedAuthConfigs": {}
+      },
+      "id": "5gWSnf6v",
+      "timestamp": 1751390693.795715
+    },
+    {
+      "content": {
+        "parts": [
+          {
+            "text": "Ok, tell me everything you can"
+          }
+        ],
+        "role": "user"
+      },
+      "invocationId": "e-62d4fedd-b60b-498f-bac3-609fb19ca3f0",
+      "author": "user",
+      "actions": {
+        "stateDelta": {},
+        "artifactDelta": {},
+        "requestedAuthConfigs": {}
+      },
+      "id": "8FsSHHSz",
+      "timestamp": 1751390713.529457
+    },
+    {
+      "content": {
+        "parts": [
+          {
+            "functionCall": {
+              "id": "call_41b2a4ca-66f1-4a59-b254-10e9e2b6225f",
+              "args": {
+                "where_conditions": [
+                  {
+                    "column": "id",
+                    "value": 19,
+                    "operator": "="
+                  }
+                ],
+                "table": "movies"
+              },
+              "name": "structured_select"
+            }
+          }
+        ],
+        "role": "model"
+      },
+      "partial": false,
+      "usageMetadata": {
+        "candidatesTokenCount": 14,
+        "promptTokenCount": 2484,
+        "totalTokenCount": 2498
+      },
+      "invocationId": "e-62d4fedd-b60b-498f-bac3-609fb19ca3f0",
+      "author": "movie_database_agent",
+      "actions": {
+        "stateDelta": {},
+        "artifactDelta": {},
+        "requestedAuthConfigs": {}
+      },
+      "longRunningToolIds": [],
+      "id": "80boNCye",
+      "timestamp": 1751390713.597545
+    },
+    {
+      "content": {
+        "parts": [
+          {
+            "functionResponse": {
+              "id": "call_41b2a4ca-66f1-4a59-b254-10e9e2b6225f",
+              "name": "structured_select",
+              "response": {
+                "result": {
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "{\"success\": true, \"message\": \"Successfully retrieved 1 rows\", \"data\": [{\"id\": 19, \"title\": \"Goodfellas\", \"release_year\": 1990, \"genre\": \"Crime\", \"director\": \"Martin Scorsese\", \"rating\": 8.7, \"duration_minutes\": 146, \"budget\": 25000000, \"revenue\": 46836394, \"description\": \"The story of Henry Hill and his life in the mob, covering his relationship with his wife Karen Hill and his mob partners.\"}], \"row_count\": 1, \"query_executed\": \"SELECT * FROM movies WHERE id = %s\", \"columns\": [\"id\", \"title\", \"release_year\", \"genre\", \"director\", \"rating\", \"duration_minutes\", \"budget\", \"revenue\", \"description\"]}"
+                    }
+                  ],
+                  "isError": false
+                }
+              }
+            }
+          }
+        ],
+        "role": "user"
+      },
+      "invocationId": "e-62d4fedd-b60b-498f-bac3-609fb19ca3f0",
+      "author": "movie_database_agent",
+      "actions": {
+        "stateDelta": {},
+        "artifactDelta": {},
+        "requestedAuthConfigs": {}
+      },
+      "id": "f0rHZnEH",
+      "timestamp": 1751390716.659795
+    },
+    {
+      "content": {
+        "parts": [
+          {
+            "text": "Here's what I know about the movie with ID 19:\n\n*   **Title:** Goodfellas\n*   **Release Year:** 1990\n*   **Genre:** Crime\n*   **Director:** Martin Scorsese\n*   **Rating:** 8.7\n*   **Duration:** 146 minutes\n*   **Budget:** $25,000,000\n*   **Revenue:** $46,836,394\n*   **Description:** The story of Henry Hill and his life in the mob, covering his relationship with his wife Karen Hill and his mob partners."
+          }
+        ],
+        "role": "model"
+      },
+      "partial": false,
+      "usageMetadata": {
+        "candidatesTokenCount": 137,
+        "promptTokenCount": 2727,
+        "totalTokenCount": 2864
+      },
+      "invocationId": "e-62d4fedd-b60b-498f-bac3-609fb19ca3f0",
+      "author": "movie_database_agent",
+      "actions": {
+        "stateDelta": {},
+        "artifactDelta": {},
+        "requestedAuthConfigs": {}
+      },
+      "id": "iwtVfrMY",
+      "timestamp": 1751390716.704825
+    }
+  ],
+  "lastUpdateTime": 1751390716.704825
+}
